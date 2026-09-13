@@ -3,121 +3,181 @@
 
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yatrix</title>
 
-    <title>TripMate AI</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
 
-    <div class="page-bg">
-        <div class="gradient-circle circle-1"></div>
-        <div class="gradient-circle circle-2"></div>
-        <div class="gradient-circle circle-3"></div>
+    <div class="wrap">
+
+        <header class="top">
+            <span class="eyebrow"><span class="dot"></span>LangGraph agents ready</span>
+            <h1>Yatrix</h1>
+            <p>Build the request as a structured flight manifest instead of a paragraph — set your route, dates, budget
+                band and class, watch the request compose itself, then generate the itinerary.</p>
+        </header>
+
+        <div class="ticket">
+            <div class="ticket-body">
+
+                <div class="route-row">
+                    <div class="field" style="flex:0 1 150px;">
+                        <label for="origin">From</label>
+                        <select id="origin">
+                            <option value="Mumbai (BOM)" selected>Mumbai · BOM</option>
+                            <option value="Delhi (DEL)">Delhi · DEL</option>
+                            <option value="Bengaluru (BLR)">Bengaluru · BLR</option>
+                            <option value="Pune (PNQ)">Pune · PNQ</option>
+                            <option value="Hyderabad (HYD)">Hyderabad · HYD</option>
+                        </select>
+                    </div>
+                    <div class="plane-divider">✈</div>
+                    <div class="field" style="flex:1 1 220px;">
+                        <label for="destination">To</label>
+                        <input type="text" id="destination" value="" placeholder="e.g. Tokyo, Japan" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="field" style="flex:0 1 200px;">
+                        <label for="startDate">Departs</label>
+                        <input type="date" id="startDate" />
+                    </div>
+
+                    <div class="field" style="flex:0 1 160px;">
+                        <label>Duration (days)</label>
+                        <div class="stepper">
+                            <button type="button" id="daysMinus" aria-label="Decrease days">−</button>
+                            <input type="text" id="days" value="7" inputmode="numeric" />
+                            <button type="button" id="daysPlus" aria-label="Increase days">+</button>
+                        </div>
+                    </div>
+
+                    <div class="field" style="flex:0 1 140px;">
+                        <label>Travelers (PAX)</label>
+                        <div class="stepper">
+                            <button type="button" id="paxMinus" aria-label="Decrease travelers">−</button>
+                            <input type="text" id="pax" value="2" inputmode="numeric" />
+                            <button type="button" id="paxPlus" aria-label="Increase travelers">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chip-row" id="dayChips">
+                    <button type="button" class="chip" data-days="3">3D</button>
+                    <button type="button" class="chip" data-days="5">5D</button>
+                    <button type="button" class="chip" data-days="7" aria-pressed="true">7D</button>
+                    <button type="button" class="chip" data-days="10">10D</button>
+                    <button type="button" class="chip" data-days="14">14D</button>
+                    <button type="button" class="chip" data-days="21">21D</button>
+                    <button type="button" class="chip" data-days="30">30D</button>
+                </div>
+
+                <div class="range-block">
+                    <label class="stub-label" style="margin:0;">Budget band</label>
+                    <div class="range-values">
+                        <span class="lo" id="budgetMinLabel">₹1,00,000</span>
+                        <span class="hi" id="budgetMaxLabel">₹2,00,000</span>
+                    </div>
+                    <div class="range-slider">
+                        <div class="track"></div>
+                        <div class="fill" id="budgetFill"></div>
+                        <input type="range" id="budgetMin" min="20000" max="2000000" step="10000" value="100000">
+                        <input type="range" id="budgetMax" min="20000" max="2000000" step="10000" value="200000">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="field" style="flex:1 1 220px;">
+                        <label>Class</label>
+                        <div class="segmented" id="travelClass">
+                            <button type="button" data-value="Economy" aria-pressed="true">Economy</button>
+                            <button type="button" data-value="Premium Economy">Premium</button>
+                            <button type="button" data-value="Business">Business</button>
+                        </div>
+                    </div>
+                    <div class="field" style="flex:1 1 220px;">
+                        <label>Itinerary pace</label>
+                        <div class="segmented" id="pace">
+                            <button type="button" data-value="relaxed">Relaxed</button>
+                            <button type="button" data-value="balanced" aria-pressed="true">Balanced</button>
+                            <button type="button" data-value="packed">Packed</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="notes">Special requests (optional)</label>
+                    <textarea id="notes"
+                        placeholder="e.g. vegetarian meals, want to see cherry blossoms, aisle seats"></textarea>
+                </div>
+
+                <div class="error-msg" id="errorMsg">Please enter a destination before generating your manifest.</div>
+            </div>
+
+            <div class="ticket-stub">
+                <div>
+                    <div class="stub-label">Request preview</div>
+                    <div class="summary-text" id="summaryText"></div>
+                </div>
+
+                <div class="stat-list">
+                    <div class="stat"><span class="k">Route</span><span class="v" id="statRoute">BOM → —</span></div>
+                    <div class="stat"><span class="k">Duration</span><span class="v" id="statDuration">7D / 6N</span>
+                    </div>
+                    <div class="stat"><span class="k">PAX</span><span class="v" id="statPax">2</span></div>
+                    <div class="stat"><span class="k">Budget</span><span class="v" id="statBudget">₹1.0L–2.0L</span>
+                    </div>
+                </div>
+
+                <button type="button" class="generate-btn" id="generateBtn">
+                    Generate Itinerary
+                    <span class="sub" id="generateSub">→ POST /api/travel</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="routes-section">
+            <div class="stub-label">Quick routes</div>
+            <div class="route-chips">
+                <button type="button" class="route-chip" data-preset="japan"><b>BOM</b><span
+                        class="arrow">✈</span><b>NRT</b>&nbsp;· 7D · Mid-range</button>
+                <button type="button" class="route-chip" data-preset="dubai"><b>BOM</b><span
+                        class="arrow">✈</span><b>DXB</b>&nbsp;· 5D · Budget</button>
+                <button type="button" class="route-chip" data-preset="thailand"><b>BOM</b><span
+                        class="arrow">✈</span><b>BKK</b>&nbsp;· 7D · Budget</button>
+                <button type="button" class="route-chip" data-preset="dubaiLux"><b>BOM</b><span
+                        class="arrow">✈</span><b>DXB</b>&nbsp;· 4D · Business</button>
+            </div>
+        </div>
+
+        <div class="loading-row" id="loadingRow" style="display:none;">
+            <span class="spinner"></span> Contacting flight, hotel and itinerary agents…
+        </div>
+
+        <div class="manifest" id="manifest">
+            <div class="manifest-head">
+                <div>
+                    <h2>Itinerary Manifest</h2>
+                    <div class="manifest-route" id="manifestRoute">Thread: —</div>
+                </div>
+                <div class="manifest-actions">
+                    <button type="button" id="copyBtn">Copy</button>
+                    <button type="button" class="primary" id="downloadBtn">Download PDF</button>
+                </div>
+            </div>
+            <div class="manifest-body" id="manifestBody"></div>
+        </div>
+
+        <footer class="note">Built with FastAPI, LangGraph, Groq, PostgreSQL, Tavily and AviationStack</footer>
     </div>
-
-    <main class="app-container">
-
-        <section class="hero-section">
-            <div class="badge">
-                ✈️ TripMate AI — A Multi-Agent Travel Planner with LangGraph
-            </div>
-
-            <h1>
-                Plan Your Perfect Trip with AI
-            </h1>
-
-            <p>
-                Search flights, discover hotels, and generate a complete travel itinerary using a multi-agent LangGraph
-                system.
-            </p>
-        </section>
-
-        <section class="planner-card">
-
-            <div class="card-header">
-                <div>
-                    <h2>Where do you want to go?</h2>
-                    <p>
-                        Example: Plan a complete 7 days Japan trip from India under 2 lakhs.
-                    </p>
-                </div>
-
-                <div class="status-pill">
-                    <span class="status-dot"></span>
-                    Online
-                </div>
-            </div>
-
-            <div class="input-area">
-                <textarea id="userInput"
-                    placeholder="Plan a complete 7 days Japan trip including flights, hotels and sightseeing under 2 lakhs..."></textarea>
-
-                <button id="sendBtn" onclick="sendMessage()">
-                    <span id="btnText">Generate Plan</span>
-                    <span id="btnLoader" class="loader hidden"></span>
-                </button>
-            </div>
-
-            <div class="quick-prompts">
-                <button
-                    onclick="setPrompt('Plan a complete 7 days Japan trip from India including flights, hotels and sightseeing under 2 lakhs.')">
-                    Japan Trip
-                </button>
-
-                <button
-                    onclick="setPrompt('Plan a 5 days Dubai trip from India with flights, hotels and sightseeing.')">
-                    Dubai Trip
-                </button>
-
-                <button
-                    onclick="setPrompt('Plan a 7 days Thailand trip from India with budget hotels and sightseeing.')">
-                    Thailand Trip
-                </button>
-
-                <button onclick="setPrompt('Give me all country flight info.')">
-                    Global Flights
-                </button>
-            </div>
-
-        </section>
-
-        <section id="resultSection" class="result-section hidden">
-
-            <div class="result-header">
-                <div>
-                    <h2>Your AI Travel Plan</h2>
-                    <p id="threadInfo">Thread ID: -</p>
-                </div>
-
-                <div class="result-actions">
-                    <button class="copy-btn" onclick="copyResult()">
-                        Copy
-                    </button>
-
-                    <button class="download-btn" onclick="downloadPDF()">
-                        Download PDF
-                    </button>
-                </div>
-            </div>
-
-            <div id="pdfContent" class="pdf-content">
-                <h1 class="pdf-title">AI Travel Plan</h1>
-                <div id="resultBox" class="result-box"></div>
-            </div>
-
-        </section>
-
-        <section id="errorBox" class="error-box hidden"></section>
-
-    </main>
-
-    <footer>
-        Built with FastAPI, LangGraph, Groq, PostgreSQL, Tavily and AviationStack
-    </footer>
 
     <!-- Markdown Renderer -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
